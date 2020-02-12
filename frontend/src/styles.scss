@@ -1,1 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
+// Ensure that the content area fills the screen.
+//
+.content-container {
+height: 100%;
+overflow: scroll;
+}
+
+.client-logo {
+height: 100%;
+margin: 0em 1em;
+}
+
+.tooltip .tooltip-content {
+animation: fadein 1s;
+}
+
+@keyframes fadein {
+from {
+    opacity: 0;
+}
+to {
+    opacity: 1;
+}
+}
+
+.left-datagrid-filter-column .datagrid-filter {
+transform: translate(1rem, 1rem) !important;
+}
+
+// Fix that the datagrid column resize handles overlap filters.
+//
+.datagrid-table .datagrid-column .datagrid-filter {
+z-index: 501;
+}

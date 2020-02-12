@@ -1,0 +1,30 @@
+.ht-header {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ht-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: scroll;
+  }
+  
+  clr-dropdown-menu a clr-icon {
+    margin-right: 0.25rem;
+  }
+  
+  .ht-logo {
+    height: auto;
+    width: 4em;
+    pointer-events: none;
+    margin-right: 1em;
+  }
+  
+  .client-name-title {
+    margin-left: 1em;
+  }
+  
+  a.support-link {
+    color: #ffdc0b;
+  }
