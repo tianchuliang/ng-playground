@@ -24,8 +24,10 @@ export class NeuralStyleService {
     return this.http.post(`${API_URL}/upload_content`, formData).pipe(map((res:Response) => res));
   }
 
-  public downloadResultImage(): Observable<Response>{
-    return this.http.get(`${API_URL}/dnload`).pipe(map((res:Response) => res));
+  public downloadResultImage(): Observable<Blob> {
+    return this.http.get(`${API_URL}/dnload`, {
+      responseType: "blob"
+    });
   }
 
   public loadNeuralModel():Observable<Response> {

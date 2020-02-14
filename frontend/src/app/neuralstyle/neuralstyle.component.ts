@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NeuralStyleService } from './neuralstyle.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -17,10 +18,12 @@ export class NeuralStyleComponent implements OnInit {
   errorMessage = '';
   styleImgURL: string | ArrayBuffer;
   contentImgURL: string | ArrayBuffer;
+  outputImgURL: SafeUrl;
   selectedStyleFile: ImageSnippet;
   selectedContentFile: ImageSnippet;
   
-  constructor(private NeuralStyleService: NeuralStyleService) {}
+  constructor(private NeuralStyleService: NeuralStyleService,
+                    private domSanitizer: DomSanitizer) {}
 
   onStyleFileChanged(event) {
     this.selectedStyleFile = new ImageSnippet('image',event.target.files[0]);
@@ -30,7 +33,7 @@ export class NeuralStyleComponent implements OnInit {
       this.styleImgURL = reader.result;
     }
   }
-
+  
   onContentFileChanged(event) {
     this.selectedContentFile = new ImageSnippet('image',event.target.files[0]);
     const reader = new FileReader();
@@ -61,14 +64,23 @@ export class NeuralStyleComponent implements OnInit {
   }
 
   onDownloadContent() {
-    this.NeuralStyleService.downloadResultImage().subscribe(
-      (res) => {
-        console.log(res)
-      },
-      (err) => {
-        console.log(err)
-      })
+    this.NeuralStyleService.
+    downloadResultImage().
+    subscribe((val) => {
+      this.createImageFromBlob(val);
+    });
   }
+
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      this.outputImgURL = this.domSanitizer.bypassSecurityTrustUrl(<string>reader.result);
+    }, false);
+  if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
 
   ngOnInit(): void {   
     this.NeuralStyleService.loadNeuralModel().subscribe(
@@ -79,5 +91,4 @@ export class NeuralStyleComponent implements OnInit {
         console.log(err)
       }); 
   }
-
 }
