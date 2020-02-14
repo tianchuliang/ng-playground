@@ -1,0 +1,34 @@
+<div class='card'>
+  <div class='card-header'>
+    {{pageTitle}}
+  </div>
+
+<input
+  style="display: none"
+  type="file" (change)="onStyleFileChanged($event)"
+  #styleFileInput>
+<button (click)="styleFileInput.click()">Select Style Image</button>
+<button (click)="onUploadStyle()">Upload!</button>
+<input
+  style="display: none"
+  type="file" (change)="onContentFileChanged($event)"
+  #contentFileInput>
+<button (click)="contentFileInput.click()">Select Content Image</button>
+<button (click)="onUploadContent()">Upload!</button>
+
+<button (click)="onDownloadContent()">Get my result</button>
+</div>
+
+<div>
+   <img [src]="styleImgURL" height="200" *ngIf="styleImgURL">
+</div>
+
+<div>
+   <img [src]="contentImgURL" height="200" *ngIf="contentImgURL">
+</div>
+
+
+<div *ngIf='errorMessage'
+     class='alert alert-danger'>
+  Error: {{ errorMessage }}
+</div>

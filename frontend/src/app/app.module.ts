@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { WelcomeComponent } from './home/welcome.component';
-import { ProductModule } from './gpt2/product.module';
+import { NeuralStyleModule } from './neuralstyle/neuralstyle.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { ProductModule } from './gpt2/product.module';
       { path: '', redirectTo: 'welcome', pathMatch: 'full' },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
-    ProductModule
+    NeuralStyleModule
   ],
   bootstrap: [AppComponent]
 })

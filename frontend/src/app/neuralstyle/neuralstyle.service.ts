@@ -2,33 +2,34 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
+import {API_URL} from '../env';
 
-import { IProduct } from './product';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProductService {
-  // If using Stackblitz, replace the url with this line
-  // because Stackblitz can't find the api folder.
-  // private productUrl = 'assets/products/products.json';
-  private productUrl = 'api/products/products.json';
+export class NeuralStyleService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(): Observable<IProduct[]> {
-    return this.http.get<IProduct[]>(this.productUrl)
-      .pipe(
-        tap(data => console.log('All: ' + JSON.stringify(data))),
-        catchError(this.handleError)
-      );
+  public uploadStyleImage(image: File): Observable<Response> {
+    const formData: FormData = new FormData();
+    formData.append('image',image);
+    return this.http.post(`${API_URL}/upload_style`, formData).pipe(map((res:Response) => res));
   }
 
-  getProduct(id: number): Observable<IProduct | undefined> {
-    return this.getProducts()
-      .pipe(
-        map((products: IProduct[]) => products.find(p => p.productId === id))
-      );
+  public uploadContentImage(image: File): Observable<Response> {
+    const formData: FormData = new FormData();
+    formData.append('image',image);
+    return this.http.post(`${API_URL}/upload_content`, formData).pipe(map((res:Response) => res));
+  }
+
+  public downloadResultImage(): Observable<Response>{
+    return this.http.get(`${API_URL}/dnload`).pipe(map((res:Response) => res));
+  }
+
+  public loadNeuralModel():Observable<Response> {
+    return this.http.post(`${API_URL}/nstylehome`,'').pipe(map((res:Response) => res));
   }
 
   private handleError(err: HttpErrorResponse) {

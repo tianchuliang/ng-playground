@@ -1,20 +1,22 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { ProductListComponent } from './product-list.component';
+import { NeuralStyleComponent } from './neuralstyle.component';
 import { ConvertToSpacesPipe } from '../shared/convert-to-spaces.pipe';
 import { SharedModule } from '../shared/shared.module';
+import { NeuralStyleService } from './neuralstyle.service';
 
 @NgModule({
   imports: [
     RouterModule.forChild([
-      { path: 'gpt2', component: ProductListComponent },
+      { path: 'neuralstyle', component: NeuralStyleComponent },
     ]),
     SharedModule
   ],
   declarations: [
-    ProductListComponent,
+    NeuralStyleComponent,
     ConvertToSpacesPipe
-  ]
+  ],
+  providers: [NeuralStyleService]
 })
-export class ProductModule { }
+export class NeuralStyleModule { }
