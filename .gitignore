@@ -4,7 +4,9 @@ typings
 node_modules
 jspm_packages
 bower_components
-
+**/*.pyc
+**/**/*.pyc
+**/**/**/*.pyc
 .vs
 **/*.sou
 **/*.user
