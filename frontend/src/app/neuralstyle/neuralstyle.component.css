@@ -18,3 +18,7 @@ thead {
 right:    100;
 bottom:   0;
 }
+
+mat-slider {
+  width: 300px;
+}

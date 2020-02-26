@@ -20,7 +20,7 @@ import { NeuralStyleModule } from './neuralstyle/neuralstyle.module';
       { path: '', redirectTo: 'welcome', pathMatch: 'full' },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
-    NeuralStyleModule
+    NeuralStyleModule,
   ],
   bootstrap: [AppComponent]
 })
