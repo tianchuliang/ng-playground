@@ -1,36 +1,32 @@
-<div class='card'>
-  <div class='card-header'>
-    {{pageTitle}}
-  </div>
-
-<input
-  style="display: none"
-  type="file" (change)="onStyleFileChanged($event)"
-  #styleFileInput>
-<button (click)="styleFileInput.click()">Select Style Image</button>
-<button (click)="onUploadStyle()">Upload!</button>
-<input
-  style="display: none"
-  type="file" (change)="onContentFileChanged($event)"
-  #contentFileInput>
-<button (click)="contentFileInput.click()">Select Content Image</button>
-<button (click)="onUploadContent()">Upload!</button>
-
-<button (click)="onDownloadContent()">Get my result</button>
+<div class='card-header'>
+  {{pageTitle}}
 </div>
-
-<div>
+<div class="style-div">
+   <img [src]="defaultStyleImgURL" height="200" *ngIf="displayDefaultStyle">
    <img [src]="styleImgURL" height="200" *ngIf="styleImgURL">
+  <input
+    style="display: none"
+    type="file" (change)="onStyleFileChanged($event)"
+    #styleFileInput>
+  <button (click)="styleFileInput.click()">Change Style</button>
 </div>
 
-<div>
+<div class="content-div">
+   <img [src]="defaultContentImgURL" height="200" *ngIf="displayDefaultContent">
    <img [src]="contentImgURL" height="200" *ngIf="contentImgURL">
+    <input
+      style="display: none"
+      type="file" (change)="onContentFileChanged($event)"
+      #contentFileInput>
+    <button (click)="contentFileInput.click()">Change Content</button>
 </div>
+
+
+<button class='mash-button' (click)="onMash()">Mash!</button>
 
 <div>
    <img [src]="outputImgURL" height="200" *ngIf="outputImgURL">
 </div>
-
 
 <div *ngIf='errorMessage'
      class='alert alert-danger'>

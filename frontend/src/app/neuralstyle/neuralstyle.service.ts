@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import {API_URL} from '../env';
-
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +24,31 @@ export class NeuralStyleService {
   }
 
   public downloadResultImage(): Observable<Blob> {
-    return this.http.get(`${API_URL}/dnload`, {
-      responseType: "blob"
+    console.log("downloadResultImage")
+    return this.http.get(`${API_URL}/dnload`,{
+      responseType: "blob",
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate'}
+    });
+  }
+
+  public pushImages(): Observable<Response> {
+    return this.http.get(`${API_URL}/load_images`,{
+      responseType: "json",
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate'}
+    }).pipe(map((res:Response) => res))
+  }
+
+  public activateModel(): Observable<Response> {
+    return this.http.get(`${API_URL}/initialize_model`,{
+      responseType: "json",
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate'}
+    }).pipe(map((res:Response) => res))
+  }
+
+  public optimize(): Observable<Blob> {
+    return this.http.get(`${API_URL}/optimize`,{
+      responseType: "blob",
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate'}
     });
   }
 
