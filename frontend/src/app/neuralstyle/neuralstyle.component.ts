@@ -9,6 +9,7 @@ class ImageSnippet {
 }
 
 @Component({
+  selector:'nstyle',
   templateUrl: './neuralstyle.component.html',
   styleUrls: ['./neuralstyle.component.css']
 })

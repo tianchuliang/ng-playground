@@ -6,6 +6,8 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { WelcomeComponent } from './home/welcome.component';
 import { NeuralStyleModule } from './neuralstyle/neuralstyle.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { NeuralStyleModule } from './neuralstyle/neuralstyle.module';
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),
     NeuralStyleModule,
+    BrowserAnimationsModule,
+    MatMenuModule
   ],
   bootstrap: [AppComponent]
 })
