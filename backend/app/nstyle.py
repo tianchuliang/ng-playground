@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request
 import sys
 import os
 from werkzeug import secure_filename
@@ -14,7 +14,7 @@ from app.nstylemodel.helper import image_loader,\
 # creating the Flask application
 app = Flask(__name__)
 CORS(app)
-session(app)
+
 
 class nystyle_obj():
     def __init__(self):
@@ -58,45 +58,28 @@ class nystyle_obj():
 
 @app.route('/nstylehome', methods = ['POST','GET'])
 def nstylehome():
-    NEURAL_MODEL = models.vgg19(pretrained=True).features.to(device).eval()
-    styleobj = nystyle_obj()
-    styleobj.NEURAL_MODEL = NEURAL_MODEL
-    session['model'] = styleobj
     # pretending load models
-    print(styleobj.NEURAL_MODEL,sys.stderr)
-    return jsonify("model loaded.")
+    return jsonify("at neuralstyle home.")
 
 @app.route("/mash", methods=['POST'])
 def mash():
+    NEURAL_MODEL = models.vgg19(pretrained=True).features.to(device).eval()
+    styleobj = nystyle_obj()
+    styleobj.NEURAL_MODEL = NEURAL_MODEL
+    # preprocessing images 
+    
     style_img = request.files['style_img']
     cntnt_img = request.files['content_img']
-    
+
+    # the folloing maynot work
+    style_img = image_loader(style_img,h=True)
+    cntnt_img = image_loader(cntnt_img,h=True)
+    styleobj.set_images(cntnt_img, style_img)
+    styleobj.init_model()
+    result = styleobj.optimize()
+
     pass
 
-# @app.route('/upload_style', methods=['POST'])
-# def nstyle_upload_style():
-#     print("style reached backend server upload")
-#     print(request,sys.stderr)
-#     f = request.files['image']
-#     f.save("style_img.jpg")
-#     print("style image uploaded to server",sys.stderr)
-#     return jsonify("image uploaded to server")
-
-# @app.route('/upload_content', methods=['POST'])
-# def nstyle_upload_content():
-#     print("content reached backend server upload")
-#     print(request,sys.stderr)
-#     f = request.files['image']
-#     f.save("content_img.jpg")
-#     print("content image uploaded to server",sys.stderr)
-#     return jsonify("image uploaded to server")
-
-# @app.route('/load_images',methods=['GET'])
-# def load_images():
-#     STYLE_IMG = image_loader("style_img.jpg",h=True)
-#     CONTENT_IMG = image_loader("content_img.jpg",h=True)
-#     session['model'].set_images(CONTENT_IMG, STYLE_IMG)
-#     return jsonify("Images are loaded")
 
 # @app.route('/initialize_model',methods=['GET'])
 # def initialize_model():
