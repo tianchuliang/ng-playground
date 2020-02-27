@@ -56,6 +56,16 @@ export class NeuralStyleService {
     return this.http.post(`${API_URL}/nstylehome`,'').pipe(map((res:Response) => res));
   }
 
+  public mash(style_img: File, cntnt_img:File): Observable<Blob> {
+    const formData: FormData = new FormData();
+    formData.append('style_img',style_img);
+    formData.append('cntnt_img',cntnt_img);
+    return this.http.post(`${API_URL}/mash`, formData,{
+      responseType: "blob",
+      headers:{'Cache-Control':'no-cache, no-store, must-revalidate'}
+    });
+  }
+  
   private handleError(err: HttpErrorResponse) {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console

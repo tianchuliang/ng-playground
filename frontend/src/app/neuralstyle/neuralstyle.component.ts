@@ -41,13 +41,6 @@ export class NeuralStyleComponent implements OnInit {
       this.styleImgURL = reader.result;
       this.displayDefaultStyle = false;
     };
-    this.NeuralStyleService.uploadStyleImage(this.selectedStyleFile.file).subscribe(
-      (res) => {
-        console.log(res)
-      },
-      (err) => {
-        console.log(err)
-      });
   }
   
   onContentFileChanged(event) {
@@ -57,14 +50,7 @@ export class NeuralStyleComponent implements OnInit {
     reader.onload = event => {
       this.contentImgURL = reader.result;
       this.displayDefaultContent = false;
-    };
-    this.NeuralStyleService.uploadContentImage(this.selectedContentFile.file).subscribe(
-      (res) => {
-        console.log(res)
-      },
-      (err) => {
-        console.log(err)
-      });    
+    };  
   }
 
   onMash(){
@@ -74,33 +60,12 @@ export class NeuralStyleComponent implements OnInit {
     } else {
       console.log("with new pics")
 
-
-      // this.NeuralStyleService.
-      // downloadResultImage().
-      // subscribe((val) => {
-      //   console.log(val);
-      //   this.createImageFromBlob(val);
-      // });
       this.NeuralStyleService.
-      pushImages().
+      mash(this.selectedStyleFile.file, this.selectedContentFile.file).
       subscribe((val) => {
         console.log(val);
+        this.createImageFromBlob(val);
       });
-
-      this.NeuralStyleService.
-      activateModel().
-      subscribe((val) => {
-        console.log(val);
-      });
-
-      for (var i = 0; i < this.defaultItrs; i++){
-        this.NeuralStyleService.
-        optimize().
-        subscribe((val) => {
-          console.log(val);
-          this.createImageFromBlob(val);
-        });
-      }
     };
     this.outputImgURL = null;
   }

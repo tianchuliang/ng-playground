@@ -1,9 +1,14 @@
 from flask import Flask, jsonify, request
 import sys
 import os
+import tempfile
 from werkzeug import secure_filename
 from flask import send_file
 from flask_cors import CORS
+import io
+from tempfile import NamedTemporaryFile
+from shutil import copyfileobj
+from os import remove
 from app.nstylemodel.helper import image_loader,\
                                 models,\
                                 torch,\
@@ -38,9 +43,9 @@ class nystyle_obj():
         self.CNN_NORMALIZATION_MEAN = torch.tensor([0.485, 0.456, 0.406]).to(device)
         self.CNN_NORMALIZATION_STD = torch.tensor([0.229, 0.224, 0.225]).to(device)
     
-    def optimize(self):
+    def optimize(self, steps = 1):
         if self.ITRS == 0:
-            self.INPUT_IMG = self.CONTENT_IMG.cpu.clone()
+            self.INPUT_IMG = self.CONTENT_IMG.clone()
         else:
             self.INPUT_IMG = self.PROGRESS
         self.ITRS += 1
@@ -52,7 +57,7 @@ class nystyle_obj():
                                             self.INPUT_IMG,\
                                             self.CONTENT_LAYERS_DEFAULT,\
                                             self.STYLE_LAYERS_DEFAULT,
-                                            num_steps=5)
+                                            num_steps=steps)
         return self.PROGRESS
 
 
@@ -66,36 +71,29 @@ def mash():
     NEURAL_MODEL = models.vgg19(pretrained=True).features.to(device).eval()
     styleobj = nystyle_obj()
     styleobj.NEURAL_MODEL = NEURAL_MODEL
+    print("=============================== neural model loaded")
     # preprocessing images 
-    
     style_img = request.files['style_img']
-    cntnt_img = request.files['content_img']
-
-    # the folloing maynot work
+    cntnt_img = request.files['cntnt_img']
+    print("=============================== image files arrived from request")
     style_img = image_loader(style_img,h=True)
     cntnt_img = image_loader(cntnt_img,h=True)
+    print("=============================== image preprocessed")
     styleobj.set_images(cntnt_img, style_img)
+    print("=============================== image pushed to model")
     styleobj.init_model()
-    result = styleobj.optimize()
+    print("=============================== model initialized")
+    result = styleobj.optimize(steps=10)
+    unloader = transforms.ToPILImage()
+    image = result.cpu().clone()  # we clone the tensor to not do changes on it
+    image = image.squeeze(0)      # remove the fake batch dimension
+    image = unloader(image)
+    print("=============================== neural model ran")
 
-    pass
-
-
-# @app.route('/initialize_model',methods=['GET'])
-# def initialize_model():
-#     session['model'].init_model() 
-#     return jsonify("Neural model initialized")
-
-# @app.route('/optimize',methods=['GET'])
-# def optimize():
-#     unloader = transforms.ToPILImage()  # reconvert into PIL image
-#     print("!!!!!!!!!",sys.stderr)
-#     PROGRESS = session['model'].optimize()
-#     image = PROGRESS.cpu().clone()  # we clone the tensor to not do changes on it
-#     image = image.squeeze(0)      # remove the fake batch dimension
-#     image = unloader(image)
-#     image.save("output.jpg")
-#     return send_file("../output.jpg", mimetype='image/*')
+    imgio = io.BytesIO()
+    image.save(imgio, 'JPEG')
+    imgio.seek(0)
+    return send_file(imgio, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
