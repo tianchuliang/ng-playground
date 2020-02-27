@@ -66,46 +66,53 @@ def nstylehome():
     print(styleobj.NEURAL_MODEL,sys.stderr)
     return jsonify("model loaded.")
 
-@app.route('/upload_style', methods=['POST'])
-def nstyle_upload_style():
-    print("style reached backend server upload")
-    print(request,sys.stderr)
-    f = request.files['image']
-    f.save("style_img.jpg")
-    print("style image uploaded to server",sys.stderr)
-    return jsonify("image uploaded to server")
+@app.route("/mash", methods=['POST'])
+def mash():
+    style_img = request.files['style_img']
+    cntnt_img = request.files['content_img']
+    
+    pass
 
-@app.route('/upload_content', methods=['POST'])
-def nstyle_upload_content():
-    print("content reached backend server upload")
-    print(request,sys.stderr)
-    f = request.files['image']
-    f.save("content_img.jpg")
-    print("content image uploaded to server",sys.stderr)
-    return jsonify("image uploaded to server")
+# @app.route('/upload_style', methods=['POST'])
+# def nstyle_upload_style():
+#     print("style reached backend server upload")
+#     print(request,sys.stderr)
+#     f = request.files['image']
+#     f.save("style_img.jpg")
+#     print("style image uploaded to server",sys.stderr)
+#     return jsonify("image uploaded to server")
 
-@app.route('/load_images',methods=['GET'])
-def load_images():
-    STYLE_IMG = image_loader("style_img.jpg",h=True)
-    CONTENT_IMG = image_loader("content_img.jpg",h=True)
-    session['model'].set_images(CONTENT_IMG, STYLE_IMG)
-    return jsonify("Images are loaded")
+# @app.route('/upload_content', methods=['POST'])
+# def nstyle_upload_content():
+#     print("content reached backend server upload")
+#     print(request,sys.stderr)
+#     f = request.files['image']
+#     f.save("content_img.jpg")
+#     print("content image uploaded to server",sys.stderr)
+#     return jsonify("image uploaded to server")
 
-@app.route('/initialize_model',methods=['GET'])
-def initialize_model():
-    session['model'].init_model() 
-    return jsonify("Neural model initialized")
+# @app.route('/load_images',methods=['GET'])
+# def load_images():
+#     STYLE_IMG = image_loader("style_img.jpg",h=True)
+#     CONTENT_IMG = image_loader("content_img.jpg",h=True)
+#     session['model'].set_images(CONTENT_IMG, STYLE_IMG)
+#     return jsonify("Images are loaded")
 
-@app.route('/optimize',methods=['GET'])
-def optimize():
-    unloader = transforms.ToPILImage()  # reconvert into PIL image
-    print("!!!!!!!!!",sys.stderr)
-    PROGRESS = session['model'].optimize()
-    image = PROGRESS.cpu().clone()  # we clone the tensor to not do changes on it
-    image = image.squeeze(0)      # remove the fake batch dimension
-    image = unloader(image)
-    image.save("output.jpg")
-    return send_file("../output.jpg", mimetype='image/*')
+# @app.route('/initialize_model',methods=['GET'])
+# def initialize_model():
+#     session['model'].init_model() 
+#     return jsonify("Neural model initialized")
+
+# @app.route('/optimize',methods=['GET'])
+# def optimize():
+#     unloader = transforms.ToPILImage()  # reconvert into PIL image
+#     print("!!!!!!!!!",sys.stderr)
+#     PROGRESS = session['model'].optimize()
+#     image = PROGRESS.cpu().clone()  # we clone the tensor to not do changes on it
+#     image = image.squeeze(0)      # remove the fake batch dimension
+#     image = unloader(image)
+#     image.save("output.jpg")
+#     return send_file("../output.jpg", mimetype='image/*')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
