@@ -83,7 +83,7 @@ def mash():
     print("=============================== image pushed to model")
     styleobj.init_model()
     print("=============================== model initialized")
-    result = styleobj.optimize(steps=10)
+    result = styleobj.optimize(steps=1)
     unloader = transforms.ToPILImage()
     image = result.cpu().clone()  # we clone the tensor to not do changes on it
     image = image.squeeze(0)      # remove the fake batch dimension
