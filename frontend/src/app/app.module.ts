@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { WelcomeComponent } from './home/welcome.component';
 import { NeuralStyleModule } from './neuralstyle/neuralstyle.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import {MatMenuModule} from '@angular/material/menu';
+import { ClarityModule } from '@clr/angular';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ import {MatMenuModule} from '@angular/material/menu';
     ]),
     NeuralStyleModule,
     BrowserAnimationsModule,
-    MatMenuModule
+    ClarityModule
   ],
   bootstrap: [AppComponent]
 })
