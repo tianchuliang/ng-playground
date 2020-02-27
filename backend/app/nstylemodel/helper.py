@@ -15,7 +15,7 @@ import sys
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def image_loader(image_name,h=False):
-    imsize = (225,225)
+    imsize = (256,256)
     loader = transforms.Compose([
             transforms.Resize(imsize),  # scale imported image
             transforms.ToTensor()])  # transform it into a torch tensor
@@ -146,10 +146,10 @@ def run_style_transfer(cnn, normalization_mean, normalization_std,
 
             run[0] += 1
             if run[0] % 10 == 0:
-                print("run {}:".format(run), sys.stderr)
+                print("run {}:".format(run))
                 print('Style Loss : {:4f} Content Loss: {:4f}'.format(
-                    style_score.item(), content_score.item()), sys.stderr)
-                print("--", sys.stderr)
+                    style_score.item(), content_score.item()))
+                print("--")
             return style_score + content_score
 
         optimizer.step(closure)
