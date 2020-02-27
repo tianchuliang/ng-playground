@@ -28,6 +28,7 @@ export class NeuralStyleComponent implements OnInit {
   outputImgURL: SafeUrl;
   selectedStyleFile: ImageSnippet;
   selectedContentFile: ImageSnippet;
+  defaultItrs = 3;
   
   constructor(private NeuralStyleService: NeuralStyleService,
                     private domSanitizer: DomSanitizer) {}
@@ -80,7 +81,6 @@ export class NeuralStyleComponent implements OnInit {
       //   console.log(val);
       //   this.createImageFromBlob(val);
       // });
-
       this.NeuralStyleService.
       pushImages().
       subscribe((val) => {
@@ -93,14 +93,14 @@ export class NeuralStyleComponent implements OnInit {
         console.log(val);
       });
 
-
-      this.NeuralStyleService.
-      optimize().
-      subscribe((val) => {
-        console.log(val);
-        this.createImageFromBlob(val);
-      });
-
+      for (var i = 0; i < this.defaultItrs; i++){
+        this.NeuralStyleService.
+        optimize().
+        subscribe((val) => {
+          console.log(val);
+          this.createImageFromBlob(val);
+        });
+      }
     };
     this.outputImgURL = null;
   }
