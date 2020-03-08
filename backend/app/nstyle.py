@@ -9,56 +9,15 @@ import io
 from tempfile import NamedTemporaryFile
 from shutil import copyfileobj
 from os import remove
-from app.nstylemodel.helper import image_loader,\
-                                models,\
-                                torch,\
-                                run_style_transfer,\
-                                device,\
-                                transforms
+import cv2
+import numpy as np
+from PIL import Image
+from app.nstylemodel.helper import load_img, preprocess_content_image, preprocess_style_image, run_style_predict, run_style_transform
+print("=============================== neural model loaded")
 
 # creating the Flask application
 app = Flask(__name__)
 CORS(app)
-
-
-class nystyle_obj():
-    def __init__(self):
-        self.NEURAL_MODEL = None
-        self.STYLE_IMG = None
-        self.CONTENT_IMG = None
-        self.CNN_NORMALIZATION_MEAN = None
-        self.CNN_NORMALIZATION_STD = None
-        self.CONTENT_LAYERS_DEFAULT = None
-        self.STYLE_LAYERS_DEFAULT = None
-        self.PROGRESS = None
-        self.ITRS = 0
-
-    def set_images(self, CONTENT_IMG, STYLE_IMG):
-        self.CONTENT_IMG = CONTENT_IMG
-        self.STYLE_IMG = STYLE_IMG
-    
-    def init_model(self):
-        self.CONTENT_LAYERS_DEFAULT = ['conv_4']
-        self.STYLE_LAYERS_DEFAULT = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
-        self.CNN_NORMALIZATION_MEAN = torch.tensor([0.485, 0.456, 0.406]).to(device)
-        self.CNN_NORMALIZATION_STD = torch.tensor([0.229, 0.224, 0.225]).to(device)
-    
-    def optimize(self, steps = 1):
-        if self.ITRS == 0:
-            self.INPUT_IMG = self.CONTENT_IMG.clone()
-        else:
-            self.INPUT_IMG = self.PROGRESS
-        self.ITRS += 1
-        self.PROGRESS = run_style_transfer(self.NEURAL_MODEL,\
-                                            self.CNN_NORMALIZATION_MEAN,\
-                                            self.CNN_NORMALIZATION_STD,\
-                                            self.CONTENT_IMG,\
-                                            self.STYLE_IMG,\
-                                            self.INPUT_IMG,\
-                                            self.CONTENT_LAYERS_DEFAULT,\
-                                            self.STYLE_LAYERS_DEFAULT,
-                                            num_steps=steps)
-        return self.PROGRESS
 
 
 @app.route('/nstylehome', methods = ['POST','GET'])
@@ -68,26 +27,29 @@ def nstylehome():
 
 @app.route("/mash", methods=['POST'])
 def mash():
-    NEURAL_MODEL = models.vgg19(pretrained=True).features.to(device).eval()
-    styleobj = nystyle_obj()
-    styleobj.NEURAL_MODEL = NEURAL_MODEL
-    print("=============================== neural model loaded")
     # preprocessing images 
     style_img = request.files['style_img']
     cntnt_img = request.files['cntnt_img']
+    style_img = Image.open(style_img)
+    cntnt_img = Image.open(cntnt_img)
+    print(type(style_img))
+    print(type(cntnt_img))
+    style_img = np.asarray(style_img, dtype=np.uint8)
+    cntnt_img = np.asarray(cntnt_img, dtype=np.uint8)
     print("=============================== image files arrived from request")
-    style_img = image_loader(style_img,h=True)
-    cntnt_img = image_loader(cntnt_img,h=True)
+    style_img = load_img(style_img)
+    cntnt_img = load_img(cntnt_img)
+    preprocessed_content_image = preprocess_content_image(style_img)
+    preprocessed_style_image = preprocess_style_image(cntnt_img)
+    print('Style Image Shape:', preprocessed_style_image.shape)
+    print('Content Image Shape:', preprocessed_content_image.shape)
     print("=============================== image preprocessed")
-    styleobj.set_images(cntnt_img, style_img)
-    print("=============================== image pushed to model")
-    styleobj.init_model()
+    style_bottleneck = run_style_predict(preprocessed_style_image)
+    print('Style Bottleneck Shape:', style_bottleneck.shape)
+    stylized_image = run_style_transform(style_bottleneck, preprocessed_content_image)
     print("=============================== model initialized")
-    result = styleobj.optimize(steps=1)
-    unloader = transforms.ToPILImage()
-    image = result.cpu().clone()  # we clone the tensor to not do changes on it
-    image = image.squeeze(0)      # remove the fake batch dimension
-    image = unloader(image)
+    image = stylized_image.squeeze(0)      # remove the fake batch dimension
+    
     print("=============================== neural model ran")
 
     imgio = io.BytesIO()
